@@ -41,10 +41,6 @@ class Friendbook
 		// Skriv ut all info om alle
 		martin.skrivUtAlt();
 
-		// Denne skal gi utskriften "Martin"
-		// Person [] lisaKjenner = lisa.hentKjenninger();
-		// System.out.println(lisaKjenner[1].hentBestevenn().hentNavn());
-
 	}
 
 }
@@ -115,17 +111,6 @@ class Person
 	}
 
 	/**
-   * En metode for å sette en Person(p) til forelsket-klassevariabelen
-   * Dette forteller oss hvem vi er forelsket i.
-   * @param p Personen vi vil bli forelsket i
-   */
-	public void blirForelsketI(Person p)
-	{
-		if (p.equals(this)) { return; }
-		this.forelsketi = p;
-	}
-
-	/**
    * En metode for å sette en Person(p) til likerikke-klassevariabelen
    * Dette forteller oss hvem vi "ikke liker".
    * @param p Personen vi vil bli uvenn med
@@ -153,6 +138,9 @@ class Person
 	}
 
 
+	/**
+	*		En ny kommentar
+	**/
 	public void skrivUtVenner ()
 	{
 		for (Person p : this.kjenner) {
