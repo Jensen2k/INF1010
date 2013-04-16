@@ -1,15 +1,12 @@
 /**
 * Denne klassen initialiserer den andre oblig-en i INF1010
-* @author Martin Jensen
+* @author Martin Jensen (martjens)
 * @version 0.1
+*	@comment Verdt å merke seg ved oppgaven:
+*						- Jeg har valgt å skrive det meste på engelsk, mener dette er enklere
+*						- I metoden der det sjekkes om noen vil ha en bok, returnerer jeg boolsk-verdi isteden for boken, mener dette er enklere å sjekke mot, og mer korrekt.
 */
-class Oblig2
-{
-	public static void main(String[] args) {
-		Friendbook friendster = new Friendbook();
-		friendster.setup();
-	}
-}
+
 
 /**
 * Nå som Facebook starter å miste brukere
@@ -22,24 +19,67 @@ class Friendbook
    * friendbook, en klasse som holder styr på
    * forbindelser mellom Person-objekter
    */
+	private Person[] arr;
+
+
 	public void setup() 
 	{
-		Person martin = new Person("Martin", 3, "krim");
-		Person emil = new Person("Emil", 3, "krim");
+		Person martin = new Person("Martin", 3, "poesi");
+		Person emil = new Person("Emil", 3, "sport");
 		Person lisa = new Person("Lisa", 3, "krim");
-		Person ramzi = new Person("Ramzi", 3, "krim");
+		Person ramzi = new Person("Ramzi", 3, "mat");
+
+		arr = new Person[4];
+		arr[0] = martin;
+		arr[1] = emil;
+		arr[2] = lisa;
+		arr[3] = ramzi;
+
+
 
 		// Meg først!
-		martin.blirKjentMed(lisa);
+		martin.meets(lisa);
 
 		// Lag koblinger for Lisa
-		lisa.blirKjentMed(ramzi);
+		lisa.meets(ramzi);
 
 		// Lag koblinger for Ramzi
-		ramzi.blirKjentMed(emil);
+		ramzi.meets(emil);
+
+		// Sjekk bøker
+		this.checkBooks();
 
 		// Skriv ut all info om alle
-		martin.skrivUtAlt();
+		martin.printAll();
+
+	}
+
+	private void checkBooks() {
+		checkBook(new Book("Java")); 
+		checkBook(new Book("krim")); 
+		checkBook(new Book("historie")); 
+		checkBook(new Book("sport")); 
+		checkBook(new Book("poesi")); 
+		checkBook(new Book("sport")); 
+		checkBook(new Book("poesi")); 
+		checkBook(new Book("baby")); 
+		checkBook(new Book("poesi"));
+	}
+
+	private void checkBook(Book b)
+	{
+		// Sort the array around
+		Person[] bookChecks = new Person[4];
+		bookChecks[0] = arr[1];
+		bookChecks[1] = arr[3];
+		bookChecks[2] = arr[2];
+		bookChecks[3] = arr[0];
+
+		for (Person p: bookChecks) 
+		{
+			if (p.wantsBook(b))
+				break;
+		}
 
 	}
 
@@ -47,11 +87,12 @@ class Friendbook
 
 class Person
 {
-	private String navn;
-	private Person [] kjenner;
-	private Person likerikke;
-	private Person forelsketi;
-	private Bok bokKat;
+	private String 					name;
+	private Person[] 				friends;
+	private Person 					likerikke;
+	private Person 					forelsketi;
+	private Book 						book;
+	private Container<Book>	library;
 
 	/**
 	 * Denne metoden initialiserer og 
@@ -60,11 +101,12 @@ class Person
    * @param lengde 		Størrelse på arrayet som holder kjenninger
    * @return Person 	Et nytt person-objekt.
    */
-	Person(String n, int lengde, String kat)
+	Person(String n, int length, String kat)
 	{
-		this.kjenner = new Person[lengde];
-		this.navn = n;
-		this.bokKat = new Bok(kat);
+		this.friends 	= new Person[length];
+		this.name 		= n;
+		this.book 		= new Book(kat);
+		this.library 	= new Container<Book>();
 	}
 
 	/**
@@ -72,9 +114,9 @@ class Person
    * holder objektets jeg-navn.
    * @return navn Navnet på personen i objektet
    */
-	public String hentNavn()
+	public String name()
 	{
-		return this.navn;
+		return this.name;
 	}
 
 	/**
@@ -83,12 +125,12 @@ class Person
    * @param p Personen vi vil vite om vi er kjent med.
    * @return Boolean En bool som forteller oss om vi er kjente
    */
-	public boolean erKjentMed(Person p)
+	public boolean hasMet(Person p)
 	{
-		for (Person person : this.kjenner) {
-			if (person.equals(p)) {
+		for (Person person : this.friends) 
+		{
+			if (person.equals(p))
 				return true;
-			}
 		}
 		return false;
 	}
@@ -99,12 +141,14 @@ class Person
    * "tomme" plassen, og setter Person(p) inn på den posisjonen.
    * @param p Personen vi vil bli kjent med
    */
-	public void blirKjentMed(Person p)
+	public void meets(Person p)
 	{
 		if (p.equals(this)) { return; }
-		for (int i = 0; i < this.kjenner.length; i++) {
-			if (this.kjenner[i] == null) {
-				this.kjenner[i] = p;
+		for (int i = 0; i < this.friends.length; i++) 
+		{
+			if (this.friends[i] == null) 
+			{
+				this.friends[i] = p;
 				return;
 			}
 		}
@@ -124,86 +168,125 @@ class Person
 	/**
    * @see erKjentMed(Person p)
    */
-	public boolean erVennMed(Person p)
+	public boolean isFriends(Person p)
 	{
-		return this.erKjentMed(p);
+		return this.hasMet(p);
 	}
 
 	/**
    * @see blirKjentMed(Person p)
    */
-	public void blirVennMed(Person p)
+	public void addFriend(Person p)
 	{
-		this.blirKjentMed(p);
+		this.meets(p);
 	}
 
 
 	/**
 	*		En ny kommentar
 	**/
-	public void skrivUtVenner ()
+	public void printFriends ()
 	{
-		for (Person p : this.kjenner) {
+		for (Person p : this.friends) {
 			if (!p.equals(this.likerikke)) {
-				System.out.println(p.hentNavn());
+				System.out.println(p.name());
 			}
 		}
 	}
-	public Person hentBestevenn()
+	public Person bestFriend()
 	{
-		return this.kjenner[0];
+		return this.friends[0];
 	}
 
-	public Person[] hentKjenninger()
+	public Person[] known()
 	{
-		return this.kjenner;
+		return this.friends;
 	}
 
-	public void skrivUtKjenninger () { 
-		for (Person p: kjenner)
-				if ( p!=null) System.out.print(p.hentNavn() + " "); 
+	public void printKnown () { 
+		for (Person p: this.friends)
+				if ( p!=null) System.out.print(p.name() + " "); 
 			System.out.println("");
 	}
 
-	public String minBesteVennHeter() 
+	public String bestFriendName() 
 	{
-		if (this.hentBestevenn() == null) 
+		if (this.bestFriend() == null) 
 			return "Ingen";
 
-		return this.hentBestevenn().hentNavn();				
+		return this.bestFriend().name();				
 
 	}
 
-	public void skrivUtMeg() {
-		System.out.println(navn + " er venn med " + minBesteVennHeter()) ;
+	public void printMe() {
+		System.out.println(name + " er venn med " + bestFriendName());
+		System.out.println(name + " liker " + this.book.category() + "-bøker og har " + this.library.count() + " av dem.");
 	}
 
-	public void skrivUtAlt() { 
-		skrivUtMeg();
-		if(this.hentBestevenn() != null) hentBestevenn().skrivUtAlt();
+	public void printAll() { 
+		printMe();
+		if(this.bestFriend() != null) bestFriend().printAll();
 	}
 
-	public boolean mittInteressefelt(Bok b)
+	public boolean hasInterest(Book b)
 	{
-		if (this.bokKat.kategori().equals(b.kategori()))
+		if (this.book.category().equals(b.category()))
 			return true;
 
 		return false;
 	}
 
-}
 
-
-class Bok {
-	private String kategori;
-
-	Bok(String kat)
+	/*
+	*	Følte det her var mer korrekt å returnere en BOOL enn et bok-objekt.
+	*/
+	public boolean wantsBook(Book b)
 	{
-		this.kategori = kat;
+		if (this.hasInterest(b)) 
+		{
+			this.library.put(b);
+			return true;
+		}
+		return false;
+
+			
 	}
 
-	public String kategori()
+}
+
+class Container <T> {
+
+	private T[] objects = (T[]) new Object[100]; 
+	private int count = 0;
+
+	public void put(T obj) 
 	{
-		return this.kategori;
+		objects[count] = obj;
+		count ++; 
+	}
+	
+	public T get() 
+	{
+		count--;
+		return objects[count]; 
+	}
+
+	public int count() 
+	{
+		return count;
+	}
+}
+
+class Book {
+	private String category;
+
+	Book(String cat)
+	{
+		this.category = cat;
+	}
+
+	public String category()
+	{
+		return this.category;
 	}
 }
